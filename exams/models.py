@@ -25,9 +25,13 @@ class Subject(models.Model):
 class Question(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     subject = models.ForeignKey(Subject, related_name='subject_questions', on_delete=models.CASCADE)
+    order = models.IntegerField()
     question_text = models.TextField()
     is_multiple = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    score = models.IntegerField()
+    negative_marking_allowed = models.BooleanField(default=False)
+    negative_marking_score = models.IntegerField(default=0)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -35,6 +39,7 @@ class Question(models.Model):
 
     class Meta:
         db_table = 'questions'
+        unique_together = ['subject', 'order']
 
 
     def __str__(self) -> str:
@@ -65,8 +70,9 @@ class Response(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='user_responses', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, related_name='question_responses', on_delete=models.CASCADE)
-    option = models.ForeignKey(Option, related_name='option_responses', on_delete=models.SET_NULL, null=True)
+    option = models.ForeignKey(Option, related_name='option_responses', on_delete=models.SET_NULL, null=True, blank=True)
     is_correct = models.BooleanField(default=False)
+    score = models.IntegerField()
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -74,6 +80,7 @@ class Response(models.Model):
 
     class Meta:
         db_table = 'responses'
+        unique_together = ['user', 'question']
 
 
     def __str__(self) -> str:
