@@ -22,6 +22,21 @@ class Subject(models.Model):
 
 
 
+class UserSubjectDetail(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    start_time = models.TimeField()
+    end_time = models.TimeField(blank=True, null=True)
+    is_complete = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    
+    class Meta:
+        db_table = 'user_subject_details'
+
+
 class Question(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     subject = models.ForeignKey(Subject, related_name='subject_questions', on_delete=models.CASCADE)

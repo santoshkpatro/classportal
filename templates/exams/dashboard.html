@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <h1>Dashboard</h1>
+    <div class="list-group">
+        {% for subject in subjects %}
+        <a href="{% url 'exam_subject_detail' subject_id=subject.id %}" class="list-group-item list-group-item-action">{{ subject.title }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock main %}
