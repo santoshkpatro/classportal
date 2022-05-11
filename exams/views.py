@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Sum
 from .models import Question, Response, Subject, Option
 
 
@@ -83,16 +84,19 @@ def question_response(request, question_id):
 
     # Calculating score
     if option.is_correct:
+        is_correct = True
         score = question.score
     else:
+        is_correct = False
         score = 0
 
     if existing_response:
         existing_response.option = option
         existing_response.score = score
+        existing_response.is_correct = is_correct
         existing_response.save()
     else:
-        response = Response(user=request.user, question=question, option=option, score=score)
+        response = Response(user=request.user, question=question, option=option, score=score, is_correct=is_correct)
         response.save()
 
     try:
@@ -102,3 +106,20 @@ def question_response(request, question_id):
         return redirect('exam_subject_questions', subject_id=question.subject.id)
 
     
+def subject_score_detail(request, subject_id):
+    try:
+        subject = Subject.objects.get(id=subject_id)
+        questions = Question.objects.filter(subject=subject)
+        responses = Response.objects.filter(question__in=questions, user=request.user)
+        score = responses.aggregate(Sum('score'))['score__sum']
+
+        context = {
+            'subject': subject,
+            'questions': questions,
+            'responses': responses,
+            'score': score
+        }
+        return render(request, 'exams/subject_score_detail.html', context=context)
+    except Subject.DoesNotExist:
+        messages.error(request, 'Invalid subject ID')
+        return redirect('exam_dashboard')
