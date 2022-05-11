@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Question, Response, Subject, Option
@@ -30,7 +31,6 @@ def question_detail(request, subject_id):
         order = request.GET.get('order', 1)
         subject = Subject.objects.get(id=subject_id)
         questions = Question.objects.filter(subject=subject).order_by('order')
-        existing_response = None
 
         try:
             selected_question = questions.get(order=order)
@@ -59,8 +59,46 @@ def question_detail(request, subject_id):
 
 
 @login_required(login_url='login')
-def question_response(request, question_id, option_id):
+def question_response(request, question_id):
     try:
         question = Question.objects.get(id=question_id)
     except Question.DoesNotExist:
+        messages.error(request, 'Unable to find question')
         return redirect('exam_dashboard')
+    
+    try:
+        option = Option.objects.get(id=request.GET['option_id'])
+    except Option.DoesNotExist:
+        messages.error(request, 'Unable to find option')
+        return redirect('exam_dashboard')
+
+    if option.question_id != question.id:
+        messages.error(request, 'Invalid Option Access')
+        return redirect('exam_subject_questions', subject_id=question.subject.id)
+
+    try:
+        existing_response = Response.objects.get(question=question, user=request.user)
+    except Response.DoesNotExist:
+        existing_response = None
+
+    # Calculating score
+    if option.is_correct:
+        score = question.score
+    else:
+        score = 0
+
+    if existing_response:
+        existing_response.option = option
+        existing_response.score = score
+        existing_response.save()
+    else:
+        response = Response(user=request.user, question=question, option=option, score=score)
+        response.save()
+
+    try:
+        next_question = Question.objects.get(subject=question.subject, order=question.order + 1)
+        return redirect(reverse('exam_subject_questions', kwargs={'subject_id': question.subject.id}) + f'?order={next_question.order}')
+    except Question.DoesNotExist:
+        return redirect('exam_subject_questions', subject_id=question.subject.id)
+
+    
