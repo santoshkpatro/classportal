@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/exams/dashboard.css' %}">
+{% endblock style %}
 
 {% block main %}
 <div class="container">
@@ -10,3 +15,6 @@
     </div>
 </div>
 {% endblock main %}
+
+{% block script %}
+{% endblock %}
