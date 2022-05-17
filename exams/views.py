@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum
-from .models import Question, Response, Subject, Option
+from .models import Question, Response, Subject, Option, UserSubjectDetail
 
 
 @login_required(login_url='login')
@@ -13,6 +13,15 @@ def dashboard(request):
         'subjects': subjects
     }
     return render(request, 'exams/dashboard.html', context=context)
+
+
+@login_required(login_url='login')
+def start_exam(request, subject_id):
+    try:
+        existing_user_subject = UserSubjectDetail.objects.get(user=request.user, subject_id=subject_id)
+    except UserSubjectDetail.DoesNotExist:
+        messages.warning(request, 'No info found')
+        return redirect('exam_dashboard')
 
 
 

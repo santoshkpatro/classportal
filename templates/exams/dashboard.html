@@ -8,10 +8,23 @@
 {% block main %}
 <div class="container">
     <h1>Dashboard</h1>
+    <h3>Pending Exams</h3>
     <div class="list-group">
-        {% for subject in subjects %}
-        <a href="{% url 'exam_subject_detail' subject_id=subject.id %}" class="list-group-item list-group-item-action">{{ subject.title }}</a>
-        {% endfor %}
+        <div class="row">
+            {% for subject in subjects %}
+            <div class="col-3 my-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ subject.title }}</h5>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of
+                            the
+                            card's content.</p>
+                        <a href="{% url 'exam_subject_detail' subject_id=subject.id %}" class="card-link">View Exam</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock main %}

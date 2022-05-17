@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
 
 {% block main %}
-<h1>Score: {{ score }}</h1>
+<div class="container mt-3">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">{{ subject.title }}</h5>
+            <p class="card-text">Score - {{ score }}</p>
+            <a href="#" class="btn btn-primary">Back To Dashboard</a>
+        </div>
+    </div>
+</div>
 {% endblock main %}
