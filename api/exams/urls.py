@@ -1,6 +1,7 @@
 from django.urls import path
+from .views import SubjectListView
 
 
 urlpatterns = [
-    path('')
+    path('subjects/', SubjectListView.as_view()),
 ]
