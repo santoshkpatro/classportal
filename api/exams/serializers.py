@@ -12,6 +12,16 @@ class SubjectSerializer(serializers.ModelSerializer):
         ]
 
 
+class QuestionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = [
+            'id',
+            'order',
+            'question_text',
+        ]
+
+
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
@@ -32,7 +42,3 @@ class QuestionSerializer(serializers.ModelSerializer):
             'question_text',
             'question_options'
         ]
-
-    # def get_options(self, obj):
-    #     serializer = OptionSerializer(instance=obj.question_options, many=True)
-    #     return serializer.data
