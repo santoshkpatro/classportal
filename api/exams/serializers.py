@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from exams.models import Subject, Question, Option
+from exams.models import Subject, Question, Option, Response
 
 
 class SubjectSerializer(serializers.ModelSerializer):

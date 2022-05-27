@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions, exceptions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response as RESTResponse
-from exams.models import Question, Response, Subject
+from exams.models import Option, Question, Response, Subject
 from .serializers import SubjectSerializer, QuestionListSerializer, QuestionSerializer, OptionSerializer
 
 
@@ -59,3 +59,47 @@ class QuestionDetailView(APIView):
                 }, status=status.HTTP_200_OK)
         except Question.DoesNotExist:
             return RESTResponse(data={'detail': 'Question not available!'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+class QuestionResponseView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, question_id):
+        try:
+            question = Question.objects.get(id=question_id)
+        except Question.DoesNotExist:
+            return RESTResponse(data={'detail': 'Question not available'}, status=status.HTTP_404_NOT_FOUND)
+        
+        option_id = request.query_params.get('option_id', None)
+        if not option_id:
+            return RESTResponse(data={'detail': 'Please provide option id'}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            option = Option.objects.get(id=option_id)
+        except Option.DoesNotExist:
+            return RESTResponse(data={'detail': 'Option not available'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            existing_response = Response.objects.get(question=question, user=self.request.user, option=option)
+        except Response.DoesNotExist:
+            existing_response = None
+
+        # Calculating score
+        if option.is_correct:
+            is_correct = True
+            score = question.score
+        else:
+            is_correct = False
+            score = 0
+        
+        if existing_response:
+            existing_response.option = option
+            existing_response.score = score
+            existing_response.is_correct = is_correct
+            existing_response.save()
+        else:
+            response = Response(user=self.request.user, question=question, option=option, score=score, is_correct=is_correct)
+            response.save()
+
+        return RESTResponse(data={'detail': 'Response taken'}, status=status.HTTP_201_CREATED)
