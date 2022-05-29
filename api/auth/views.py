@@ -26,4 +26,3 @@ def login_view(request):
     refresh_token = RefreshToken.for_user(user)
 
     return Response(data={'access_token': str(access_token), 'refresh_token': str(refresh_token)}, status=status.HTTP_200_OK)
-

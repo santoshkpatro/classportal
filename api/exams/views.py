@@ -1,3 +1,4 @@
+import uuid
 from rest_framework import generics, permissions, exceptions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response as RESTResponse
@@ -81,7 +82,7 @@ class QuestionResponseView(APIView):
             return RESTResponse(data={'detail': 'Option not available'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            existing_response = Response.objects.get(question=question, user=self.request.user, option=option)
+            existing_response = Response.objects.get(question=question, user=request.user)
         except Response.DoesNotExist:
             existing_response = None
 
