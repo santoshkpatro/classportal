@@ -122,7 +122,8 @@ class SubjectScoreView(APIView):
             questions = Question.objects.filter(subject=subject)
             responses = Response.objects.filter(question__in=questions, user=request.user)
             score = responses.aggregate(Sum('score'))['score__sum']
+            total_score = questions.aggregate(Sum('score'))['score__sum']
 
-            return RESTResponse(data={'score': score}, status=status.HTTP_200_OK)
+            return RESTResponse(data={'score': score, 'total_score': total_score}, status=status.HTTP_200_OK)
         except Subject.DoesNotExist:
             return RESTResponse(data={'detail': 'Subject not available'}, status=status.HTTP_404_NOT_FOUND)
