@@ -1,7 +1,8 @@
-import uuid
 from rest_framework import generics, permissions, exceptions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response as RESTResponse
+from django.db.models import Sum
+
 from exams.models import Option, Question, Response, Subject
 from .serializers import SubjectSerializer, QuestionListSerializer, QuestionSerializer, OptionSerializer
 
@@ -104,3 +105,18 @@ class QuestionResponseView(APIView):
             response.save()
 
         return RESTResponse(data={'detail': 'Response taken'}, status=status.HTTP_201_CREATED)
+
+
+class SubjectScoreView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, subject_id):
+        try:
+            subject = Subject.objects.get(id=subject_id)
+            questions = Question.objects.filter(subject=subject)
+            responses = Response.objects.filter(question__in=questions, user=request.user)
+            score = responses.aggregate(Sum('score'))['score__sum']
+
+            return RESTResponse(data={'score': score}, status=status.HTTP_200_OK)
+        except Subject.DoesNotExist:
+            return RESTResponse(data={'detail': 'Subject not available'}, status=status.HTTP_404_NOT_FOUND)
