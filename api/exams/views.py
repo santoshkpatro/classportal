@@ -21,6 +21,12 @@ class SubjectListView(generics.ListAPIView):
         return super().get_queryset().filter(is_active=True)
 
 
+class SubjectDetailView(generics.RetrieveAPIView):
+    serializer_class = SubjectSerializer
+    queryset = Subject.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+
 class SubjectQuestionListView(generics.ListAPIView):
     serializer_class = QuestionListSerializer
     queryset = Question.objects.all()
