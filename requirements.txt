@@ -6,3 +6,4 @@ djangorestframework-simplejwt==5.2.0
 PyJWT==2.4.0
 pytz==2022.1
 sqlparse==0.4.2
+whitenoise==6.1.0
