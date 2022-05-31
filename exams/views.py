@@ -1,4 +1,3 @@
-from sqlite3 import complete_statement
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -16,7 +15,8 @@ def dashboard(request):
     subjects = subjects.difference(complete_subjects).difference(incomplete_subjects)
     context = {
         'subjects': subjects,
-        'incomplete_subjects': incomplete_subjects
+        'incomplete_subjects': incomplete_subjects,
+        'complete_subjects': complete_subjects,
     }
 
     return render(request, 'exams/dashboard.html', context=context)
@@ -132,14 +132,16 @@ def subject_score_detail(request, subject_id):
     try:
         subject = Subject.objects.get(id=subject_id)
         questions = Question.objects.filter(subject=subject)
-        responses = Response.objects.filter(question__in=questions, user=request.user)
+        responses = Response.objects.filter(question__in=questions, user=request.user).order_by('question__order')
         score = responses.aggregate(Sum('score'))['score__sum']
+        total_score = questions.aggregate(Sum('score'))['score__sum']
 
         context = {
             'subject': subject,
             'questions': questions,
             'responses': responses,
-            'score': score
+            'score': score,
+            'total_score': total_score
         }
         return render(request, 'exams/subject_score_detail.html', context=context)
     except Subject.DoesNotExist:
@@ -165,3 +167,15 @@ def end_exam(request, subject_id):
     user_subject.save()
 
     return redirect('exam_subject_score_detail', subject_id=subject.id)
+
+
+def subject_report(request, subject_id):
+    try:
+        subject = Subject.objects.get(id=subject_id, is_active=True)
+    except Subject.DoesNotExist:
+        messages.warning(request, 'No subject info found')
+        return redirect('exam_dashboard')
+
+    responses = Response.objects.filter(user=request.user, question__subject=subject)
+    print(responses)
+    return render(request, 'exams/subject_report.html')

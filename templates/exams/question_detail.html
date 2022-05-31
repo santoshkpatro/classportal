@@ -1,16 +1,37 @@
 {% extends 'exam_base.html' %}
 
+{% block style %}
+<style>
+  .back-btn {
+    cursor: pointer;
+    margin: 12px 0px;
+  }
+  .back-btn:hover {
+    color: #777;
+  }
+  .question-cloud-btns {
+    border-radius: 10px;
+  }
+</style>
+{% endblock style %}
+
 {% block main %}
-<div class="container-fluid">
-    <div class="row mt-3">
-        <div class="col-9">
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-7">
+            <div class="back-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+              </svg>
+              Back
+            </div>
             <form action="{% url 'exam_subject_question_response' question_id=selected_question.id %}" method="get">
-                <h4>Question - {{ selected_question.order }}</h4>
-                <h5>{{ selected_question.question_text }}</h5>
+                <h4 class="my-3">Question - {{ selected_question.order }}</h4>
+                <h5 class="my-3">{{ selected_question.question_text }}</h5>
 
                 {% if existing_response is not None %}
                     {% for option in options %}
-                    <div class="form-check">
+                    <div class="form-check my-3">
                         <input class="form-check-input" type="radio" name="option_id"
                             value="{{ option.id }}" {% if existing_response.option == option %}checked{% endif %}>
                         <label class="form-check-label" for="exampleRadios1">
@@ -20,9 +41,9 @@
                     {% endfor %}
                 {% else %}
                     {% for option in options %}
-                    <div class="form-check">
+                    <div class="form-check my-3">
                         <input class="form-check-input" type="radio" name="option_id"
-                            value="{{ option.id }}">
+                            value="{{ option.id }}" required>
                         <label class="form-check-label" for="exampleRadios1">
                             {{ option.option_text }}
                         </label>
@@ -31,48 +52,29 @@
                 {% endif %}
 
                 <!-- Bottom Bar -->
-                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light mt-5 py-5">
                     <div class="container-fluid">
                       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                       </button>
                       <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                          <!-- <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                          </li>
-                          <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                              Dropdown
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <li><a class="dropdown-item" href="#">Action</a></li>
-                              <li><a class="dropdown-item" href="#">Another action</a></li>
-                              <li><hr class="dropdown-divider"></li>
-                              <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link disabled">Disabled</a>
-                          </li> -->
                         </ul>
                         <ul class="navbar-nav">
+                            <a class="btn btn-secondary mx-2" href="{% url 'exam_subject_questions' subject_id=subject.id %}?order={{ selected_question.order|add:-1 }}">Previous</a>
                             <button class="btn btn-primary mx-2" type="submit">Save and Next</button>
-                            <a class="btn btn-danger mx-2" href="{% url 'exam_subject_score_detail' subject_id=subject.id %}" type="submit">Submit</a>
-                            <a class="btn btn-secondary mx-2" href="{% url 'exam_end_exam' subject_id=subject.id %}">Submit Exam</a>
+                            <a class="btn btn-secondary mx-2" href="{% url 'exam_subject_questions' subject_id=subject.id %}?order={{ selected_question.order|add:1 }}">Next</a>
+                            <a class="btn btn-danger mx-2" href="{% url 'exam_end_exam' subject_id=subject.id %}">Submit Exam</a>
                         </ul>
                       </div>
                     </div>
                   </nav>
             </form>
         </div>
-        <div class="col-3">
-            <h5>Questions</h5>
+        <div class="col-4 offset-1">
+            <h5 class="my-5">Questions</h5>
             {% for question in questions %}
-                <a class="btn btn-sm btn-{% if question == selected_question %}primary{% else %}secondary{% endif %}"
+                <a class="btn btn-sm question-cloud-btns m-1 p-3 btn-{% if question == selected_question %}primary{% else %}secondary{% endif %}"
                 href="{% url 'exam_subject_questions' subject_id=subject.id %}?order={{ question.order }}">{{ question.order }}</a>
             {% endfor %}
         </div>
