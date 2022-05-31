@@ -23,8 +23,8 @@ class Subject(models.Model):
 
 
 class UserSubjectDetail(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_user_subject_list')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='subject_user_subject_list')
     start_time = models.TimeField()
     end_time = models.TimeField(blank=True, null=True)
     is_complete = models.BooleanField(default=False)

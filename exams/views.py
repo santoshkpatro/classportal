@@ -1,5 +1,7 @@
+from sqlite3 import complete_statement
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum
@@ -8,21 +10,32 @@ from .models import Question, Response, Subject, Option, UserSubjectDetail
 
 @login_required(login_url='login')
 def dashboard(request):
+    incomplete_subjects = Subject.objects.filter(subject_user_subject_list__is_complete=False, subject_user_subject_list__user=request.user)
+    complete_subjects = Subject.objects.filter(subject_user_subject_list__is_complete=True, subject_user_subject_list__user=request.user)
     subjects = Subject.objects.filter(is_active=True)
+    subjects = subjects.difference(complete_subjects).difference(incomplete_subjects)
     context = {
-        'subjects': subjects
+        'subjects': subjects,
+        'incomplete_subjects': incomplete_subjects
     }
+
     return render(request, 'exams/dashboard.html', context=context)
 
 
 @login_required(login_url='login')
 def start_exam(request, subject_id):
     try:
-        existing_user_subject = UserSubjectDetail.objects.get(user=request.user, subject_id=subject_id)
-    except UserSubjectDetail.DoesNotExist:
-        messages.warning(request, 'No info found')
+        subject = Subject.objects.get(id=subject_id, is_active=True)
+    except Subject.DoesNotExist:
+        messages.warning(request, 'No subject info found')
         return redirect('exam_dashboard')
 
+    try:
+        existing_user_subject = UserSubjectDetail.objects.get(user=request.user, subject=subject)
+    except UserSubjectDetail.DoesNotExist:
+        user_subject = UserSubjectDetail.objects.create(user=request.user, subject=subject, start_time=timezone.now().time())
+
+    return redirect('exam_subject_questions', subject_id=subject.id)
 
 
 @login_required(login_url='login')
@@ -132,3 +145,23 @@ def subject_score_detail(request, subject_id):
     except Subject.DoesNotExist:
         messages.error(request, 'Invalid subject ID')
         return redirect('exam_dashboard')
+
+
+def end_exam(request, subject_id):
+    try:
+        subject = Subject.objects.get(id=subject_id, is_active=True)
+    except Subject.DoesNotExist:
+        messages.warning(request, 'No subject info found')
+        return redirect('exam_dashboard')
+
+    try:
+        user_subject = UserSubjectDetail.objects.get(user=request.user, subject=subject)
+    except UserSubjectDetail.DoesNotExist:
+        messages.error(request, 'Invalid exam question access')
+        return redirect('exam_dashboard')
+
+    user_subject.end_time = timezone.now().time()
+    user_subject.is_complete = True
+    user_subject.save()
+
+    return redirect('exam_subject_score_detail', subject_id=subject.id)

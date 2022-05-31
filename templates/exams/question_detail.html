@@ -62,6 +62,7 @@
                         <ul class="navbar-nav">
                             <button class="btn btn-primary mx-2" type="submit">Save and Next</button>
                             <a class="btn btn-danger mx-2" href="{% url 'exam_subject_score_detail' subject_id=subject.id %}" type="submit">Submit</a>
+                            <a class="btn btn-secondary mx-2" href="{% url 'exam_end_exam' subject_id=subject.id %}">Submit Exam</a>
                         </ul>
                       </div>
                     </div>

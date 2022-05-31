@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Subject, Question, Option, Response
+from .models import Subject, Question, Option, Response, UserSubjectDetail
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
@@ -20,3 +20,8 @@ class QuestionAdmin(admin.ModelAdmin):
 @admin.register(Response)
 class ResponseAdmin(admin.ModelAdmin):
     list_display = ['user', 'question', 'is_correct', 'score']
+
+
+@admin.register(UserSubjectDetail)
+class UserSubjectDetail(admin.ModelAdmin):
+    list_display = ['user', 'subject', 'is_complete']
