@@ -14,17 +14,24 @@ def register_view(request):
             return render(request, 'accounts/register.html')
         
         new_user_credentials = form.cleaned_data
-        password = new_user_credentials.pop('password')
-        confirm_password = new_user_credentials.pop('confirm_password')
 
-        if password != confirm_password:
-            messages.warning(request, 'Password and confirm password are not same')
+        try:
+            User.objects.get(email=new_user_credentials.get('email'))
+            messages.warning(request, 'User already exists!')
             return redirect('index')
+        except User.DoesNotExist:
+            password = new_user_credentials.pop('password')
+            confirm_password = new_user_credentials.pop('confirm_password')
 
-        new_user = User(**new_user_credentials)
-        new_user.set_password(password)
-        new_user.save()
-        return redirect('index')
+            if password != confirm_password:
+                messages.warning(request, 'Password and confirm password are not same')
+                return redirect('index')
+
+            new_user = User(**new_user_credentials)
+            new_user.set_password(password)
+            new_user.save()
+            messages.success(request, 'Account created successfully!')
+            return redirect('index')
 
     return render(request, 'accounts/register.html')
         
