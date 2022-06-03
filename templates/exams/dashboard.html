@@ -49,7 +49,7 @@
             <h3>Completed Exams</h3>
             <div class="list-group w-auto">
                 {% for subject in complete_subjects %}
-                <a href="{% url 'exam_start_exam' subject_id=subject.id %}" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                <a href="{% url 'exam_subject_score_detail' subject_id=subject.id %}" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
                     <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32"
                         class="rounded-circle flex-shrink-0">
                     <div class="d-flex gap-2 w-100 justify-content-between">

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <div class="card my-3">
+        <!-- <div class="card-header">
+            Quote
+        </div> -->
+        {% for post in posts %}
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <p>{{ post.post_text }}</p>
+                <footer class="blockquote-footer">{{ post.user.full_name }}
+                </footer>
+            </blockquote>
+            <h5>Comments</h5>
+            <ul class="list-group">
+                <li class="list-group-item">An item</li>
+                <li class="list-group-item">A second item</li>
+                <li class="list-group-item">A third item</li>
+                <li class="list-group-item">A fourth item</li>
+                <li class="list-group-item">And a fifth one</li>
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

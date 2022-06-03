@@ -6,9 +6,8 @@
     <div class="card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">Card title</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
+            <h6 class="card-subtitle mb-2 text-muted">{{ subject.title }}</h6>
+            <p class="card-text">{{ subject.description }}</p>
             <a href="{% url 'exam_start_exam' subject_id=subject.id %}" class="card-link">Start Exam</a>
         </div>
     </div>
