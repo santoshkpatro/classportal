@@ -30,7 +30,7 @@ class Post(models.Model):
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='user_comments', on_delete=models.CASCADE)
-    question = models.ForeignKey(Post, related_name='post_comments', on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name='post_comments', on_delete=models.CASCADE)
     comment_text = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True)

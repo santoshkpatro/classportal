@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/accounts/register.css' %}">
+{% endblock style %}
+
+{% block main %}
+<div class="text-center">
+    <main class="form-signin w-100 m-auto">
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            <!-- <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
+            <h1 class="h3 mb-3 fw-normal">Register</h1>
+
+            <div class="form-floating my-2">
+                <input type="email" required class="form-control" id="floatingInput" placeholder="name@example.com" name="email">
+                <label for="floatingInput">Email address</label>
+            </div>
+            <div class="form-floating my-2">
+                <input type="text" required class="form-control" id="floatingInput" placeholder="Admino" name="full_name">
+                <label for="floatingInput">Full Name</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" required class="form-control" id="floatingPassword" placeholder="Password" name="password">
+                <label for="floatingPassword">Password</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" required class="form-control" id="floatingPassword" placeholder="Password" name="confirm_password">
+                <label for="floatingPassword">Confirm Password</label>
+            </div>
+
+            <button class="w-100 btn btn-lg btn-primary my-2" type="submit">Register</button>
+            <p class="mt-5 mb-3 text-muted">&copy; 2017–2022</p>
+        </form>
+    </main>
+</div>
+{% endblock main %}

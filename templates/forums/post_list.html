@@ -2,27 +2,41 @@
 
 {% block main %}
 <div class="container">
+    <h5>Post your question</h5>
+    <div class="card">
+        <form action="{% url 'forums_post_create' %}" method="post">
+            {% csrf_token %}
+            <textarea name="post_text" id="" cols="20" rows="5" class="form-control"></textarea>
+            <button class="btn btn-sm btn-primary mt-3" type="submit">Post</button>
+        </form>
+    </div>
+    <hr>
+    {% for post in posts %}
     <div class="card my-3">
-        <!-- <div class="card-header">
-            Quote
-        </div> -->
-        {% for post in posts %}
         <div class="card-body">
             <blockquote class="blockquote mb-0">
                 <p>{{ post.post_text }}</p>
                 <footer class="blockquote-footer">{{ post.user.full_name }}
                 </footer>
             </blockquote>
-            <h5>Comments</h5>
+            <h5 class="mt-3">Comments</h5>
+            <form action="{% url 'forums_post_comment_add' post_id=post.id %}" class="mb-3" method="post">
+                <p>Add comment</p>
+                {% csrf_token %}
+                <input type="text" class="form-control" name="comment_text" required>
+                <button class="btn btn-sm btn-success mt-2" type="submit">Add</button>
+            </form>
             <ul class="list-group">
-                <li class="list-group-item">An item</li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-                <li class="list-group-item">A fourth item</li>
-                <li class="list-group-item">And a fifth one</li>
+                {% for comment in post.post_comments.all %}
+                <li class="list-group-item">
+                    <p>{{ comment.comment_text }}</p>
+                    <footer class="blockquote-footer">{{ comment.user.full_name }}
+                    </footer>
+                </li>
+                {% endfor %}
             </ul>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
 {% endblock %}

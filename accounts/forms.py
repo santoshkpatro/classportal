@@ -46,3 +46,10 @@ class UserChangeForm(forms.ModelForm):
 class LoginForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField()
+
+
+class RegisterForm(forms.Form):
+    full_name = forms.CharField()
+    email = forms.EmailField()
+    password = forms.CharField()
+    confirm_password = forms.CharField()
