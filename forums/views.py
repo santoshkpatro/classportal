@@ -2,12 +2,12 @@ from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from forums.models import Post, Comment
-
 from . forms import PostCreateForm
 
 
+@login_required(login_url='login')
 def post_list(request):
-    posts = Post.objects.all()
+    posts = Post.objects.all().order_by('-created_at')
     return render(request, 'forums/post_list.html', {'posts': posts})
 
 

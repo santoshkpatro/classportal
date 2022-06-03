@@ -42,7 +42,8 @@ def start_exam(request, subject_id):
 def subject_detail(request, subject_id):
     try:
         subject = Subject.objects.get(id=subject_id)
-        return render(request, 'exams/subject_detail.html', {'subject': subject})
+        question_count = Question.objects.filter(subject=subject).count
+        return render(request, 'exams/subject_detail.html', {'subject': subject, 'question_count': question_count})
     except Subject.DoesNotExist:
         messages.error(request, 'Invalid subject ID')
         return redirect('exam_dashboard')
@@ -167,15 +168,3 @@ def end_exam(request, subject_id):
     user_subject.save()
 
     return redirect('exam_subject_score_detail', subject_id=subject.id)
-
-
-def subject_report(request, subject_id):
-    try:
-        subject = Subject.objects.get(id=subject_id, is_active=True)
-    except Subject.DoesNotExist:
-        messages.warning(request, 'No subject info found')
-        return redirect('exam_dashboard')
-
-    responses = Response.objects.filter(user=request.user, question__subject=subject)
-    print(responses)
-    return render(request, 'exams/subject_report.html')

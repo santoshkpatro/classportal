@@ -10,5 +10,4 @@ urlpatterns = [
     path('<uuid:subject_id>/questions/', views.question_detail, name='exam_subject_questions'),
     path('<uuid:subject_id>/score/', views.subject_score_detail, name='exam_subject_score_detail'),
     path('<uuid:question_id>/response/', views.question_response, name='exam_subject_question_response'),
-    path('<uuid:subject_id>/report/', views.subject_report, name='exam_subject_report'),
 ]
